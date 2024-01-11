@@ -22,10 +22,8 @@ class ContactsAdapter(private val listener: onItemClickListner) :
         holder.bind(currentItem)
     }
 
-
     inner class ContactsViewHolder(private val binding: ItemContactsBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
         init {
             binding.apply {
                 root.setOnClickListener {

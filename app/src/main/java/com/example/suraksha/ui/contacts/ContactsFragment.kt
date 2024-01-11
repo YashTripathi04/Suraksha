@@ -19,11 +19,10 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ContactsFragment : Fragment(R.layout.fragment_contacts), ContactsAdapter.onItemClickListner{
+class ContactsFragment : Fragment(R.layout.fragment_contacts), ContactsAdapter.onItemClickListner {
 
     private val viewModel: ContactsViewModel by viewModels()
     lateinit var name: String
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,7 +35,7 @@ class ContactsFragment : Fragment(R.layout.fragment_contacts), ContactsAdapter.o
             rvContacts.layoutManager = LinearLayoutManager(requireContext())
             rvContacts.setHasFixedSize(true)
 
-            fabAddContacts.setOnClickListener{
+            fabAddContacts.setOnClickListener {
                 viewModel.onAddNewContactClick()
             }
 
@@ -44,7 +43,8 @@ class ContactsFragment : Fragment(R.layout.fragment_contacts), ContactsAdapter.o
                 viewModel.onSendSmsClick()
             }
 
-            ItemTouchHelper(object: ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT){
+            ItemTouchHelper(object :
+                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
                 override fun onMove(
                     recyclerView: RecyclerView,
                     viewHolder: RecyclerView.ViewHolder,
@@ -54,7 +54,7 @@ class ContactsFragment : Fragment(R.layout.fragment_contacts), ContactsAdapter.o
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                   val contact = adapter.currentList[viewHolder.adapterPosition]
+                    val contact = adapter.currentList[viewHolder.adapterPosition]
                     viewModel.onContactSwiped(contact)
                 }
 
@@ -62,7 +62,7 @@ class ContactsFragment : Fragment(R.layout.fragment_contacts), ContactsAdapter.o
 
         }
 
-        setFragmentResultListener("add_edit_request"){_, bundle ->
+        setFragmentResultListener("add_edit_request") { _, bundle ->
             val result = bundle.getInt("add_edit_result")
             viewModel.onAddEditResult(result)
         }
@@ -72,7 +72,7 @@ class ContactsFragment : Fragment(R.layout.fragment_contacts), ContactsAdapter.o
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.contactsEvent.collect{ event ->
+            viewModel.contactsEvent.collect { event ->
                 when (event) {
                     is ContactsViewModel.ContactsEvent.NavigateToAddContactsScreen -> {
                         val action =
@@ -82,6 +82,7 @@ class ContactsFragment : Fragment(R.layout.fragment_contacts), ContactsAdapter.o
                             )
                         findNavController().navigate(action)
                     }
+
                     is ContactsViewModel.ContactsEvent.NavigateToEditContactsScreen -> {
                         val action =
                             ContactsFragmentDirections.actionContactsFragmentToAddEditContactsFragment(
@@ -90,29 +91,35 @@ class ContactsFragment : Fragment(R.layout.fragment_contacts), ContactsAdapter.o
                             )
                         findNavController().navigate(action)
                     }
+
                     is ContactsViewModel.ContactsEvent.ShowContactSavedConfirmationMessage -> {
                         Snackbar.make(requireView(), event.msg, Snackbar.LENGTH_SHORT).show()
                     }
+
                     is ContactsViewModel.ContactsEvent.SendSmsToContacts -> {
                         val smsSender = SendMessage(requireActivity().application)
                         smsSender.onBtnClick(event.phNumList)
                     }
+
                     is ContactsViewModel.ContactsEvent.ShowUndoDeleteContactMessage -> {
                         Snackbar.make(requireView(), "Contact deleted", Snackbar.LENGTH_LONG)
-                            .setAction("UNDO"){
+                            .setAction("UNDO") {
                                 viewModel.onUndoDeleteClick(event.contact)
                             }.show()
                     }
+
                     is ContactsViewModel.ContactsEvent.ShowMaxContactLimitReachedMessage -> {
-                        Snackbar.make(requireView(), "Maximum contacts limit reached !", Snackbar.LENGTH_LONG).show()
+                        Snackbar.make(
+                            requireView(),
+                            "Maximum contacts limit reached !",
+                            Snackbar.LENGTH_LONG
+                        ).show()
                     }
                 }.exhaustive
             }
         }
     }
-//    fun getTotalNumberOfContacts(): Int {
-//        return adapter.itemCount
-//    }
+
     override fun onItemCLick(contact: Contacts) {
         viewModel.onContactSelected(contact)
     }

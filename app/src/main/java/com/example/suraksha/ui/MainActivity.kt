@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.text.Html
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -38,8 +37,7 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.SEND_SMS,
                 Manifest.permission.INTERNET
-            ),
-            PackageManager.PERMISSION_GRANTED
+            ), PackageManager.PERMISSION_GRANTED
         )
         val locationRequest = com.google.android.gms.location.LocationRequest.create()
 
@@ -47,27 +45,25 @@ class MainActivity : AppCompatActivity() {
             com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
         locationRequest.interval = 5000
         locationRequest.fastestInterval = 2000
-        val builder = LocationSettingsRequest.Builder()
-            .addLocationRequest(locationRequest)
+
+        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
         builder.setAlwaysShow(true)
+
         val result = LocationServices.getSettingsClient(
             applicationContext
-        )
-            .checkLocationSettings(builder.build())
+        ).checkLocationSettings(builder.build())
         result.addOnCompleteListener { task ->
             try {
                 val response = task.getResult(
                     ApiException::class.java
                 )
-                //                            Toast.makeText(MainActivity.this, "GPS is on", Toast.LENGTH_SHORT).show();
             } catch (e: ApiException) {
                 when (e.statusCode) {
                     LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> try {
                         val resolvableApiException = e as ResolvableApiException
                         val REQUEST_CHECK_SETTINGS = 10001
                         resolvableApiException.startResolutionForResult(
-                            this@MainActivity,
-                            REQUEST_CHECK_SETTINGS
+                            this@MainActivity, REQUEST_CHECK_SETTINGS
                         )
                     } catch (ex: IntentSender.SendIntentException) {
                         ex.printStackTrace()
@@ -83,44 +79,31 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController)
 
-
         if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.SEND_SMS
+                this, Manifest.permission.SEND_SMS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.SEND_SMS),
-                111
+                this, arrayOf(Manifest.permission.SEND_SMS), 111
             )
         }
         if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
+                this, Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
-                111
+                this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 111
             )
         }
         if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                this, Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                111
+                this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 111
             )
         }
-        actionBar?.setTitle(Html.fromHtml("<font color='#ff0000'>ActionBartitle </font>"));
-
-//        ActionBar?.setTitleColor(androidx.compose.ui.graphics.Color.Black)
-
+        actionBar?.title = getString(R.string.app_name).uppercase()
     }
 
     private fun ActionBar.setTitleColor(color: Int) {
